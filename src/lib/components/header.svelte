@@ -6,7 +6,7 @@
   const { slackSession, person } = page.data;
 </script>
 
-<header>
+<header class="bg-surface0">
   <div class="flex gap-2 items-center px-4 py-3 border-b-[1px] border-surface1">
     <h1 class="text-xl">High Seas Astro</h1>
     <div class="ml-auto flex gap-2.5 items-center">

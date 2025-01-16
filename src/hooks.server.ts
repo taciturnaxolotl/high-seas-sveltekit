@@ -69,4 +69,4 @@ const loadShipsMiddleware: Handle = async ({ event, resolve }) => {
     return resolve(event);
 }
 
-export const onRequest = sequence(slackMiddleware, personMiddleware, loadShipsMiddleware);
+export const handle = sequence(slackMiddleware, personMiddleware, loadShipsMiddleware);
