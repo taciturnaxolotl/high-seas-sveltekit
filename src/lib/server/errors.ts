@@ -1,0 +1,5 @@
+export const MISSING_SLACK_OAUTH_CODE = 'Missing Slack OAuth code'
+export const BAD_SLACK_OPENID_RESPONSE_STATUS = 'Bad Slack OpenID response status'
+export const INVALID_SLACK_OAUTH_CODE = 'Invalid Slack OAuth code'
+export const BAD_SLACK_OPENID_RESPONSE = 'Bad Slack OpenID response'
+export const WRONG_SLACK_WORKSPACE = 'Wrong Slack workspace! Please use the Hack Club Slack workspace to sign in.'
