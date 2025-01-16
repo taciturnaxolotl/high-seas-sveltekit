@@ -1,20 +1,30 @@
 <script lang="ts">
   import Pill from "$lib/components/pill.svelte";
   import Button from "$lib/components/button.svelte";
+  import ShipDialog from "$lib/components/ship-dialog.svelte";
   import { page } from "$app/state";
 
   const { ships } = page.data;
+
+  // biome-ignore lint/style/useConst: Svelte limitation
+  let shipDialogOpen = $state(false);
 </script>
+
+<svelte:head>
+  <title>Shipyard - High Seas v2</title>
+</svelte:head>
 
 <ul class="m-6 space-y-3">
   <div class="mb-6">
     <h1 class="text-4xl text-center font-black mb-4">Shipyard</h1>
     <div class="flex justify-center gap-2">
-      <Button variant="primary">Draft a ship</Button>
+      <Button variant="primary" onclick={() => (shipDialogOpen = true)}
+        >Draft a ship</Button
+      >
       <Button variant="surface0">Generate an idea</Button>
     </div>
   </div>
-  <ol class="space-y-2.5">
+  <ul class="space-y-2.5">
     {#each ships! as ship}
       <li
         class="rounded-lg bg-surface0 shadow-sm flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 hover:bg-surface1 transition-colors duration-200"
@@ -53,5 +63,7 @@
         </div>
       </li>
     {/each}
-  </ol>
+  </ul>
 </ul>
+
+<ShipDialog bind:open={shipDialogOpen} />
