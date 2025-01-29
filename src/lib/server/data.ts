@@ -1,4 +1,5 @@
 import airtable from "./airtable"
+import { writeFile } from "node:fs/promises" // debugging
 
 // #region fships
 export async function fetchShips(slackId: string, maxRecords?: number) {
@@ -13,6 +14,8 @@ export async function fetchShips(slackId: string, maxRecords?: number) {
     }
     if (maxRecords) query.maxRecords = maxRecords
     const ships = await airtable("ships").select(query).all()
+
+    await writeFile("ships.json", JSON.stringify(ships, null, 2)) // TODO: remove (debug)
 
     return ships.map((r) => {
         const reshippedToIdRaw = r.fields.reshipped_to as [string] | null

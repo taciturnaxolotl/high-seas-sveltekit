@@ -66,6 +66,7 @@ const loadShipsMiddleware: Handle = async ({ event, resolve }) => {
 
     const ships = await fetchShips(event.locals.slackSession.userId);
     event.locals.ships = ships;
+
     return resolve(event);
 }
 
