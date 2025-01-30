@@ -42,7 +42,6 @@
               class="inline-flex h-input w-full items-center rounded-md border border-surface1 bg-surface0 px-4 text-sm hover:border-dark-40 focus:outline-none focus:ring-2 focus:ring-surface1 focus:ring-offset-2 focus:ring-offset-surface1"
               placeholder="Orpheus Finder"
               type="text"
-              bind:value={$form.shipName}
               autocomplete="off"
             />
           </div>
@@ -58,7 +57,6 @@
               class="inline-flex h-input w-full items-center rounded-md border border-surface1 bg-surface0 px-4 text-sm hover:border-dark-40 focus:outline-none focus:ring-2 focus:ring-surface1 focus:ring-offset-2 focus:ring-offset-surface1"
               placeholder="https://github.com/OrpheusNetwork/orpheus-finder"
               type="text"
-              bind:value={$form.repoUrl}
               autocomplete="off"
             />
           </div>
@@ -74,7 +72,6 @@
               class="inline-flex h-input w-full items-center rounded-md border border-surface1 bg-surface0 px-4 text-sm hover:border-dark-40 focus:outline-none focus:ring-2 focus:ring-surface1 focus:ring-offset-2 focus:ring-offset-surface1"
               placeholder="https://raw.githubusercontent.com/OrpheusNetwork/orpheus-finder/refs/heads/main/README.md"
               type="text"
-              bind:value={$form.readmeUrl}
               autocomplete="off"
             />
           </div>
@@ -93,7 +90,6 @@
               class="inline-flex h-input w-full items-center rounded-md border border-surface1 bg-surface0 px-4 text-sm hover:border-dark-40 focus:outline-none focus:ring-2 focus:ring-surface1 focus:ring-offset-2 focus:ring-offset-surface1"
               placeholder="https://orpheus-finder.vercel.app/"
               type="text"
-              bind:value={$form.deploymentUrl}
               autocomplete="off"
             />
           </div>
@@ -109,7 +105,6 @@
               class="inline-flex h-input w-full items-center rounded-md border border-surface1 bg-surface0 px-4 text-sm hover:border-dark-40 focus:outline-none focus:ring-2 focus:ring-surface1 focus:ring-offset-2 focus:ring-offset-surface1"
               placeholder="https://cdn.skyfall.dev/agi-demo-do-not-leak.png"
               type="text"
-              bind:value={$form.screenshotUrl}
               autocomplete="off"
             />
           </div>
