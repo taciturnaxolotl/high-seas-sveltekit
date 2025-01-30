@@ -71,32 +71,38 @@ export async function fetchShips(
     return ship;
   });
 
-  const shipGroups = [];
+  const createShipGroup = (ship: Ship): ShipGroup => ({
+    title: ship.title,
+    created: new Date(ship.createdTime),
+    totalDoubloons: ship.doubloonPayout || 0,
+    totalHours: ship.creditedHours || 0,
+    isInYswsBase: ship.isInYswsBase,
+    ships: [ship],
+  });
+
+  const updateShipGroup = (group: ShipGroup, ship: Ship): void => {
+    group.totalHours += ship.creditedHours || 0;
+    group.totalDoubloons += ship.doubloonPayout;
+    group.title = ship.title;
+    group.isInYswsBase = ship.isInYswsBase;
+    group.ships.push(ship);
+  };
+
+  const shipGroups: ShipGroup[] = [];
+  const shipGroupMap = new Map<string, ShipGroup>();
 
   for (const ship of mappedShips) {
     if (!ship.reshippedFromId) {
-      // root ship
-      shipGroups.push({
-        title: ship.title,
-        created: new Date(ship.createdTime),
-        totalDoubloons: ship.doubloonPayout || 0,
-        totalHours: ship.creditedHours || 0,
-        isInYswsBase: ship.isInYswsBase,
-        ships: [ship],
-      });
-    } else {
-      // ship in chain, try to find
-      for (const [idx, chain] of shipGroups.map((x, i) => [i, x] as const)) {
-        if (chain.ships[chain.ships.length - 1].id === ship.reshippedFromId) {
-          // found chain
-          shipGroups[idx].totalHours += ship.creditedHours || 0;
-          shipGroups[idx].totalDoubloons += ship.doubloonPayout;
-          shipGroups[idx].title = ship.title;
-          shipGroups[idx].isInYswsBase = ship.isInYswsBase;
-          shipGroups[idx].ships.push(ship);
-          break;
-        }
-      }
+      const group = createShipGroup(ship);
+      shipGroups.push(group);
+      shipGroupMap.set(ship.id, group);
+      continue;
+    }
+
+    const parentGroup = shipGroupMap.get(ship.reshippedFromId);
+    if (parentGroup) {
+      updateShipGroup(parentGroup, ship);
+      shipGroupMap.set(ship.id, parentGroup);
     }
   }
 
