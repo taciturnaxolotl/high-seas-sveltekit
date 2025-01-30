@@ -8,7 +8,21 @@
 
 <header class="bg-surface0">
   <div class="flex gap-2 items-center px-4 py-3 border-b-[1px] border-surface1">
-    <h1 class="text-xl">High Seas v2</h1>
+    <div class="flex gap-6 flex-row">
+      <h1 class="text-xl">High Seas v2</h1>
+      <div class="flex gap-4 items-center">
+        <a
+          href="/shipyard"
+          class="font-semibold"
+          class:text-mauve={page.url.pathname === "/shipyard"}>Shipyard</a
+        >
+        <a
+          href="/debug"
+          class="font-semibold"
+          class:text-mauve={page.url.pathname === "/debug"}>Debug</a
+        >
+      </div>
+    </div>
     <div class="ml-auto flex gap-2.5 items-center">
       {#if slackSession && person}
         <img
