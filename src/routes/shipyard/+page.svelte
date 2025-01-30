@@ -27,12 +27,14 @@
   <ul class="space-y-2.5">
     {#each ships! as ship}
       <li
-        class="rounded-lg bg-surface0 shadow-sm flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 hover:bg-surface1 transition-colors duration-200"
+        class="rounded-lg {ship.isInYswsBase
+          ? 'bg-yellow-100 border-yellow-200 border-2 hover:bg-yellow-200 text-base'
+          : 'bg-surface0 hover:bg-surface1'} shadow-sm flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 transition-colors duration-200"
       >
         <div class="flex gap-4 items-center">
           <div class="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 flex-shrink-0">
             <img
-              src={ship.screenshotUrl}
+              src={ship.ships[ship.ships.length - 1].screenshotUrl}
               alt={`Screenshot of ${ship.title}`}
               class="object-cover w-full h-full absolute top-0 left-0 rounded"
             />
@@ -46,14 +48,13 @@
             {ship.title}
           </h2>
           <div class="flex flex-wrap items-start gap-2 text-sm">
-            {#if ship.paidOut}
-              <Pill>{ship.doubloonPayout} doubloons</Pill>
+            {#if ship.totalDoubloons != null}
+              <Pill>{ship.totalDoubloons} doubloons</Pill>
             {/if}
-            {#if ship.creditedHours != null}
-              <Pill>{Math.round(ship.creditedHours * 10) / 10} hours</Pill>
+            {#if ship.totalHours != null}
+              <Pill>{Math.round(ship.totalHours * 10) / 10} hours</Pill>
               <Pill>
-                {Math.round((ship.doubloonPayout / ship.creditedHours) * 10) /
-                  10} doubloons/hr</Pill
+                {Math.round((ship.totalDoubloons / ship.totalHours) * 10) / 10} doubloons/hr</Pill
               >
             {/if}
           </div>
