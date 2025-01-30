@@ -28,8 +28,8 @@
     {#each ships! as ship}
       <li
         class="rounded-lg {ship.isInYswsBase
-          ? 'bg-yellow-100 border-yellow-200 border-2 hover:bg-yellow-200 text-base'
-          : 'bg-surface0 hover:bg-surface1'} shadow-sm flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 transition-colors duration-200"
+          ? 'border-yellow-200 border-2 text-yellow-200'
+          : ''} bg-surface0 hover:bg-surface1 shadow-sm flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 transition-colors duration-200"
       >
         <div class="flex gap-4 items-center">
           <div class="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 flex-shrink-0">
@@ -39,12 +39,13 @@
               class="object-cover w-full h-full absolute top-0 left-0 rounded"
             />
           </div>
-          <h2 class="text-xl font-semibold text-left mb-2 sm:hidden block">
-            {ship.title}
-          </h2>
         </div>
         <div class="flex-grow">
-          <h2 class="text-xl font-semibold text-left mb-2 sm:block hidden">
+          <h2
+            class="text-xl {ship.isInYswsBase
+              ? 'font-bold'
+              : 'font-semibold'} text-left mb-2 sm:block hidden"
+          >
             {ship.title}
           </h2>
           <div class="flex flex-wrap items-start gap-2 text-sm">
