@@ -34,7 +34,7 @@
         <span class="text-xl">Hey, {slackSession.firstName}!</span>
       {:else}
         <SignIn>
-          <Button>Sign in with Slack</Button>
+          <Button variant="primary">Sign in with Slack</Button>
         </SignIn>
       {/if}
     </div>

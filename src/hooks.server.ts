@@ -65,10 +65,7 @@ const personMiddleware: Handle = async ({ event, resolve }) => {
 };
 
 const loadShipsMiddleware: Handle = async ({ event, resolve }) => {
-  const isShipyardPage =
-    event.url.pathname.startsWith("/shipyard") ||
-    event.url.pathname.startsWith("/debug");
-  if (!isShipyardPage || !event.locals.slackSession) return resolve(event);
+  if (!event.locals.slackSession) return resolve(event);
 
   const ships = await fetchShips(event.locals.slackSession.userId);
   event.locals.ships = ships;

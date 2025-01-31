@@ -2,12 +2,21 @@
   import Pill from "$lib/components/pill.svelte";
   import Button from "$lib/components/button.svelte";
   import ShipDialog from "$lib/components/ship-dialog.svelte";
+  import GenerateIdeaDialog from "$lib/components/generate-idea-dialog.svelte";
   import { page } from "$app/state";
 
   const { ships } = page.data;
 
-  // biome-ignore lint/style/useConst: Svelte limitation
   let shipDialogOpen = $state(false);
+  let generateIdeaDialogOpen = $state(false);
+
+  function openShipDialog() {
+    shipDialogOpen = true;
+  }
+
+  function openGenerateIdeaDialog() {
+    generateIdeaDialogOpen = true;
+  }
 </script>
 
 <svelte:head>
@@ -18,10 +27,10 @@
   <div class="mb-6">
     <h1 class="text-4xl text-center font-black mb-4">Shipyard</h1>
     <div class="flex justify-center gap-2">
-      <Button variant="primary" onclick={() => (shipDialogOpen = true)}
-        >Draft a ship</Button
+      <Button variant="primary" onclick={openShipDialog}>Draft a ship</Button>
+      <Button variant="surface0" onclick={openGenerateIdeaDialog}
+        >Generate an idea</Button
       >
-      <Button variant="surface0">Generate an idea</Button>
     </div>
   </div>
   <ul class="space-y-2.5">
@@ -69,3 +78,4 @@
 </ul>
 
 <ShipDialog bind:open={shipDialogOpen} />
+<GenerateIdeaDialog bind:open={generateIdeaDialogOpen} />

@@ -2,7 +2,6 @@
   import { Dialog, Label, Separator } from "bits-ui";
   import { fade } from "svelte/transition";
   import { flyAndScale } from "$lib/utils";
-  import { page } from "$app/state";
   import X from "lucide-svelte/icons/x";
 
   // biome-ignore lint/style/useConst: cannot bind to a constant in Svelte

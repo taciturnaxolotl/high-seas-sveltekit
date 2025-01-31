@@ -1,0 +1,90 @@
+<script lang="ts">
+  import { Dialog, Label, Separator } from "bits-ui";
+  import { fade } from "svelte/transition";
+  import { flyAndScale } from "$lib/utils";
+  import Button from "$lib/components/button.svelte";
+  import X from "lucide-svelte/icons/x";
+  import OpenAI from "openai";
+  import { onMount } from "svelte";
+
+  let openai: OpenAI | undefined = $state();
+  onMount(() => {
+    openai = new OpenAI({
+      baseURL: "https://ai.hackclub.com",
+      apiKey: "placeholder", // ai.hackclub.com doesn't need an API Key, but the SDK requires one anyway
+      dangerouslyAllowBrowser: true, // ai.hackclub.com is public ;)
+    });
+  });
+
+  // biome-ignore lint/style/useConst: cannot bind to a constant in Svelte
+  let { open = $bindable(false) } = $props();
+  let aiResponse = $state("");
+
+  async function generateIdea() {
+    if (!openai) return;
+    const stream = await openai.chat.completions.create({
+      model: "deepseek-chat",
+      messages: [
+        {
+          role: "user",
+          content: `Generate a 40-50 word software project idea that is fun and engaging.
+             Ideally, It should be a 10-30 hour project. It could be a game, tool,
+             website, bot, you name it - as long as it's fun and engaging! Please don't
+             make Tic Tac Toe, calculator, or any other simple projects like that. No yapping,
+             include the idea only. Only generate a single 40-50 word idea. No sub-ideas or
+             explanations.`,
+        },
+      ],
+      stream: true,
+    });
+    for await (const chunk of stream) {
+      aiResponse += chunk.choices[0]?.delta?.content || "";
+    }
+  }
+</script>
+
+<Dialog.Root bind:open>
+  <Dialog.Portal>
+    <Dialog.Overlay
+      transition={fade}
+      transitionConfig={{ duration: 150 }}
+      class="fixed inset-0 z-50 bg-crust/80"
+    />
+    <Dialog.Content
+      transition={flyAndScale}
+      class="fixed left-[50%] top-[50%] z-50 w-full max-w-[94%] translate-x-[-50%] translate-y-[-50%] rounded-lg border border-surface0 bg-base p-5 shadow-sm outline-none sm:max-w-[490px] md:w-full"
+    >
+      <Dialog.Title
+        class="flex w-full items-center justify-center text-lg font-semibold tracking-tight"
+        >Generate Idea</Dialog.Title
+      >
+      <Separator.Root class="-mx-5 mb-6 mt-5 block h-px bg-surface0" />
+      <Dialog.Description class="text-sm">
+        Need some help thinking of an idea? No problem! We'll generate one for
+        you.
+      </Dialog.Description>
+
+      <!-- Dialog content -->
+      <div class="flex flex-col items-start gap-4 pb-11 pt-4">
+        <Button
+          variant="primary"
+          onclick={() => generateIdea()}
+          disabled={openai === undefined}>Generate idea</Button
+        >
+        {#if aiResponse}
+          <div class="bg-surface0 p-4 rounded shadow">
+            {aiResponse}
+          </div>
+        {/if}
+        <Dialog.Close
+          class="absolute right-5 top-5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface1 focus-visible:ring-offset-[2px] focus-visible:ring-offset-surface0 active:scale-98"
+        >
+          <div>
+            <X class="size-5 text-text" />
+            <span class="sr-only">Close</span>
+          </div>
+        </Dialog.Close>
+      </div></Dialog.Content
+    >
+  </Dialog.Portal>
+</Dialog.Root>
