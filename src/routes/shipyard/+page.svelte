@@ -72,16 +72,25 @@
             >
               {ship.title}
             </h2>
+            
             <div class="flex flex-wrap items-start gap-2 text-sm">
-              {#if ship.totalDoubloons != null}
-                <Pill>{ship.totalDoubloons} doubloons</Pill>
-              {/if}
-              {#if ship.totalHours != null}
-                <Pill>{Math.round(ship.totalHours * 10) / 10} hours</Pill>
-                <Pill>
-                  {Math.round((ship.totalDoubloons / ship.totalHours) * 10) /
-                    10} doubloons/hr</Pill
-                >
+              {#if ship.ships.at(-1)?.shipStatus === "shipped"}
+                {#if ship.totalDoubloons != null}
+                  <Pill>{ship.totalDoubloons} doubloons</Pill>
+                {/if}
+                {#if ship.totalHours != null}
+                  <Pill>{Math.round(ship.totalHours * 10) / 10} hours</Pill>
+                  <Pill>
+                    {Math.round((ship.totalDoubloons / ship.totalHours) * 10) /
+                      10} doubloons/hr</Pill
+                  >
+                {/if}
+              {:else}
+                <Pill
+                  >Draft ${ship.ships.at(-1)?.shipType === "project"
+                    ? "ship"
+                    : "update"}
+                </Pill>
               {/if}
             </div>
           </div>
