@@ -1,5 +1,5 @@
 import airtable from "./airtable";
-import { writeFile } from "node:fs/promises"; // debugging
+// import { writeFile } from "node:fs/promises"; // debugging
 
 // #region fships
 export async function fetchShips(
@@ -18,7 +18,7 @@ export async function fetchShips(
   if (maxRecords) query.maxRecords = maxRecords;
   const unmappedShips = await airtable("ships").select(query).all();
 
-  await writeFile("ships.json", JSON.stringify(unmappedShips, null, 2)); // TODO: remove (debug)
+  // await writeFile("ships.json", JSON.stringify(unmappedShips, null, 2)); // TODO: remove (debug)
 
   const mappedShips = unmappedShips.map((r) => {
     const reshippedToIdRaw = r.fields.reshipped_to as [string] | null;
