@@ -6,11 +6,13 @@ declare global {
     interface Locals {
       slackSession?: import("./lib/server/db/schema").SlackSession;
       ships?: import("./lib/server/data").ShipGroup[];
+      shopItems: import("./lib/server/shop").ShopItem[];
       person?: import("./lib/server/data").Person;
     }
     interface PageData {
       slackSession?: import("./lib/server/db/schema").SlackSession;
       ships?: import("./lib/server/data").ShipGroup[];
+      shopItems: import("./lib/server/shop").ShopItem[];
       person?: {
         autonumber: number;
         voteBalance: number;

@@ -22,10 +22,13 @@
   // biome-ignore lint/style/useConst: cannot bind to a constant in Svelte
   let { open = $bindable(false) } = $props();
   let aiResponse = $state("");
+  let generating = $state(false);
 
   async function generateIdea() {
     if (!openai) return;
     aiResponse = "";
+    generating = true;
+
     const stream = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       temperature: 1.3,
@@ -46,6 +49,8 @@
     for await (const chunk of stream) {
       aiResponse += chunk.choices[0]?.delta?.content || "";
     }
+
+    generating = false;
   }
 </script>
 
@@ -75,7 +80,7 @@
         <Button
           variant="primary"
           onclick={() => generateIdea()}
-          disabled={openai === undefined}>Generate idea</Button
+          disabled={openai === undefined || generating}>Generate idea</Button
         >
         {#if aiResponse}
           <div class="bg-surface0 p-4 rounded shadow">

@@ -17,6 +17,11 @@
           class:text-mauve={page.url.pathname === "/shipyard"}>Shipyard</a
         >
         <a
+          href="/shop"
+          class="font-semibold"
+          class:text-mauve={page.url.pathname === "/shop"}>Shop</a
+        >
+        <a
           href="/debug"
           class="font-semibold"
           class:text-mauve={page.url.pathname === "/debug"}>Debug</a

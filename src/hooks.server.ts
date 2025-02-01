@@ -2,6 +2,7 @@ import { sequence } from "@sveltejs/kit/hooks";
 import { db, slackSessionsTable } from "./lib/server/db";
 import { eq } from "drizzle-orm";
 import { fetchShips } from "./lib/server/data";
+import { getShop } from "./lib/server/shop";
 import airtable from "./lib/server/airtable";
 import TTLCache from "@isaacs/ttlcache";
 import type { FieldSet, Record as AirtableRecord } from "airtable";
@@ -73,6 +74,15 @@ const loadShipsMiddleware: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
+const loadShopMiddleware: Handle = async ({ event, resolve }) => {
+  if (!event.locals.slackSession) return resolve(event);
+
+  const shopItems = await getShop();
+  event.locals.shopItems = shopItems;
+
+  return resolve(event);
+};
+
 const redirectMiddleware: Handle = async ({ event, resolve }) => {
   if (
     !event.locals.slackSession &&
@@ -87,5 +97,6 @@ export const handle = sequence(
   slackMiddleware,
   redirectMiddleware,
   personMiddleware,
-  loadShipsMiddleware
+  loadShipsMiddleware,
+  loadShopMiddleware
 );

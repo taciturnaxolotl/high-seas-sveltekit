@@ -7,4 +7,6 @@
 </script>
 
 <Header />
-{@render children()}
+<main class="pb-2">
+  {@render children()}
+</main>

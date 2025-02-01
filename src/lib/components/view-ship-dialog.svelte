@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Dialog, Label, Separator } from "bits-ui";
+  import { Dialog, Separator } from "bits-ui";
   import { fade } from "svelte/transition";
   import { flyAndScale } from "$lib/utils";
   import X from "lucide-svelte/icons/x";
@@ -22,7 +22,10 @@
       micromark(md, {
         extensions: [gfm()],
         htmlExtensions: [gfmHtml()],
-      })
+      }),
+      {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+      }
     );
   }
 </script>
@@ -36,7 +39,7 @@
     />
     <Dialog.Content
       transition={flyAndScale}
-      class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-[94%] sm:max-w-[490px] md:w-full max-h-[90vh] rounded-lg border border-surface0 bg-base p-5 shadow-sm outline-none overflow-hidden flex flex-col"
+      class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-[94%] sm:max-w-[490px] md:w-full h-[90vh] rounded-lg border border-surface0 bg-base p-5 shadow-sm outline-none overflow-hidden flex flex-col"
     >
       <Dialog.Title
         class="flex w-full items-center justify-center text-lg font-semibold tracking-tight"
@@ -49,7 +52,7 @@
         {#await fetchReadme()}
           <div class="bg-surface0 p-4 rounded shadow">Loading...</div>
         {:then md}
-          <div class="prose max-w-full text-text">
+          <div class="prose w-full max-w-none antialiased">
             {@html md}
           </div>
         {:catch error}
