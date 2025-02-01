@@ -35,7 +35,7 @@
           alt={slackSession.name}
           class="w-8 h-8 rounded-full"
         />
-        <span class="text-xl">{person.doubloonsBalance} doubloons</span>
+        <span class="text-xl">{Math.floor(person.doubloonsBalance)} doubloons</span>
         <span class="text-xl">Hey, {slackSession.firstName}!</span>
       {:else}
         <SignIn>
