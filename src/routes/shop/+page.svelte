@@ -1,13 +1,15 @@
 <script lang="ts">
   import ShopRegionPicker from "$lib/components/shop-region-picker.svelte";
   import ShopItemDialog from "$lib/components/shop-item-dialog.svelte";
+  import Button from "$lib/components/button.svelte";
   import { regions } from "$lib/regionPicker";
   import { page } from "$app/state";
   import type { ShopItem } from "$lib/server/shop";
 
-  const { shopItems } = page.data;
+  const { shopItems, person } = page.data;
   // biome-ignore lint/style/useConst: svelte moment
   let region = $state(regions[0]);
+  // biome-ignore lint/style/useConst: svelte moment
   let regionValue = $derived(region.value);
   const regionKey = $derived.by(() => {
     switch (regionValue) {
@@ -29,11 +31,15 @@
   const availableShopItems = $derived.by(() => {
     return shopItems
       .filter((item) => item[regionKey])
-      .sort((a, b) =>
-        region.value === "us"
-          ? a.priceUs - b.priceUs
-          : a.priceGlobal - b.priceGlobal
-      );
+      .map((item) => {
+        const price = region.value === "us" ? item.priceUs : item.priceGlobal;
+        return {
+          ...item,
+          price,
+          canAfford: (person?.doubloonsBalance || 0) > price,
+        };
+      })
+      .sort((a, b) => a.price - b.price);
   });
 
   let shopItemDialogOpen = $state(false);
@@ -42,6 +48,12 @@
   function openShopItemDialog(item: ShopItem) {
     shopItemDialogItem = item;
     shopItemDialogOpen = true;
+  }
+
+  function handleBuy(event: Event, item: ShopItem) {
+    event.stopPropagation();
+    // TODO: Implement buy functionality
+    console.log("Buy clicked for:", item.name);
   }
 </script>
 
@@ -59,23 +71,32 @@
   <div class="grid lg:grid-cols-3 gap-4">
     {#each availableShopItems as item}
       <button class="h-full" onclick={() => openShopItemDialog(item)}>
-        <div class="bg-surface0 shadow p-4 rounded-lg h-full">
-          <div class="mb-4">
+        <div class="bg-surface0 shadow p-4 rounded-lg h-full flex flex-col">
+          <div class="flex-grow">
             <h2 class="text-xl font-bold">{item.name}</h2>
             <p class="text-sm text-muted-foreground mb-2">
               {@html item.subtitle}
             </p>
             <p class="text-lg font-medium">
-              {region.value === "us" ? item.priceUs : item.priceGlobal} doubloons
+              {item.price} doubloons
             </p>
+            {#if item.imageUrl}
+              <img
+                src={item.imageUrl}
+                alt="Image for {item.name}"
+                class="rounded-lg mt-4"
+              />
+            {/if}
           </div>
-          {#if item.imageUrl}
-            <img
-              src={item.imageUrl}
-              alt="Image for {item.name}"
-              class="rounded-lg"
-            />
-          {/if}
+          <Button
+            variant="surface1"
+            class="w-full hover:bg-mauve hover:text-black duration-250 mt-4"
+            disabled={!item.canAfford}
+            onclick={(e) => handleBuy(e, item)}
+            >{item.canAfford
+              ? "Buy"
+              : `${item.price - (person?.doubloonsBalance || 0)} more doubloons needed`}</Button
+          >
         </div>
       </button>
     {/each}
