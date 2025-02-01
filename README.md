@@ -22,13 +22,17 @@ The "Generate an idea" button is less buggy, faster (see a pattern here?) and pr
 
 The shop is a lot faster and shows more items at a time. It also shows you how many more doubloons you need for items you can't afford.
 
-![image](https://cloud-qefbd3ljn-hack-club-bot.vercel.app/0image.png)
+![image](https://cloud-dv51vpou1-hack-club-bot.vercel.app/0image.png)
 
-There's also a shop dialog that you can open by clicking on an item.
+There is also a search bar and a filter for items that are out of stock.
+
+![image](https://cloud-48youxpur-hack-club-bot.vercel.app/0image.png)
+
+Finally, there's a shop dialog that you can open by clicking on an item.
 
 ![image](https://cloud-kkvmgeodv-hack-club-bot.vercel.app/0image.png)
 
-Plus, there's a purchase API (`/api/buy?itemId={id}`) that you can use to buy items.
+An enhanced purchase URL (`/api/buy?itemId={id}`) is also available that you can use to buy items.
 
 ### Miscellaneous
 
