@@ -3,31 +3,13 @@
   import { fade } from "svelte/transition";
   import { flyAndScale } from "$lib/utils";
   import X from "lucide-svelte/icons/x";
-  import type { ShipGroup } from "$lib/server/data";
-  import { micromark } from "micromark";
-  import { gfmHtml, gfm } from "micromark-extension-gfm";
-  import sanitizeHtml from "sanitize-html";
+  import type { ShopItem } from "$lib/server/shop";
 
   // biome-ignore lint/style/useConst: cannot bind to a constant in Svelte
   let {
     open = $bindable(false),
-    shipGroup = $bindable(),
-  }: { open: boolean; shipGroup: ShipGroup } = $props();
-
-  async function fetchReadme() {
-    const latestShip = shipGroup.ships[shipGroup.ships.length - 1];
-    const response = await fetch(latestShip.readmeUrl);
-    const md = await response.text();
-    return sanitizeHtml(
-      micromark(md, {
-        extensions: [gfm()],
-        htmlExtensions: [gfmHtml()],
-      }),
-      {
-        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "video"]),
-      }
-    );
-  }
+    item = $bindable(),
+  }: { open: boolean; item: ShopItem } = $props();
 </script>
 
 <Dialog.Root bind:open>
@@ -39,27 +21,39 @@
     />
     <Dialog.Content
       transition={flyAndScale}
-      class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-[94%] sm:max-w-[490px] md:w-full h-[90vh] rounded-lg border border-surface0 bg-base p-5 shadow-sm outline-none overflow-hidden flex flex-col"
+      class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-[94%] sm:max-w-[490px] md:w-full max-h-[90vh] rounded-lg border border-surface0 bg-base p-5 shadow-sm outline-none overflow-hidden flex flex-col"
     >
       <Dialog.Title
         class="flex w-full items-center justify-center text-lg font-semibold tracking-tight"
-        >View "{shipGroup.title}"</Dialog.Title
+        >View "{item.name}"</Dialog.Title
       >
       <Separator.Root class="-mx-5 mb-6 mt-5 block h-px bg-surface0" />
 
       <!-- Dialog content -->
       <div class="flex flex-col gap-4 py-4 overflow-y-auto scrollbar">
-        {#await fetchReadme()}
-          <div class="bg-surface0 p-4 rounded shadow">Loading...</div>
-        {:then md}
+        <div class="prose w-full max-w-none antialiased">
+          {@html item.description || "<i>No description provided</i>"}
+        </div>
+        {#if item.fulfillment_description}
+          <hr />
           <div class="prose w-full max-w-none antialiased">
-            {@html md}
+            {@html item.fulfillment_description}
           </div>
-        {:catch error}
-          <div class="bg-surface0 p-4 rounded shadow">
-            Error: {error.message}
+        {/if}
+        {#if item.limited_qty}
+          <div
+            class="bg-blue text-blue-900 px-3 py-2 rounded shadow font-semibold w-full max-w-none"
+          >
+            Limited quantity available!
           </div>
-        {/await}
+        {/if}
+        {#if item.customs_likely}
+          <div
+            class="bg-yellow text-yellow-900 px-3 py-2 rounded shadow font-semibold w-full max-w-none"
+          >
+            Customs may apply outside of US!
+          </div>
+        {/if}
         <Dialog.Close
           class="absolute right-5 top-5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface1 focus-visible:ring-offset-[2px] focus-visible:ring-offset-surface0 active:scale-98"
         >

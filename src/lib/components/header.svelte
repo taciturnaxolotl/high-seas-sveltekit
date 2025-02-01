@@ -13,17 +13,17 @@
       <div class="flex gap-4 items-center">
         <a
           href="/shipyard"
-          class="font-semibold"
+          class="font-semibold transition-colors duration-200"
           class:text-mauve={page.url.pathname === "/shipyard"}>Shipyard</a
         >
         <a
           href="/shop"
-          class="font-semibold"
+          class="font-semibold transition-colors duration-200"
           class:text-mauve={page.url.pathname === "/shop"}>Shop</a
         >
         <a
           href="/debug"
-          class="font-semibold"
+          class="font-semibold transition-colors duration-200"
           class:text-mauve={page.url.pathname === "/debug"}>Debug</a
         >
       </div>

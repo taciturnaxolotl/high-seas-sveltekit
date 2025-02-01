@@ -1,7 +1,9 @@
 <script lang="ts">
   import ShopRegionPicker from "$lib/components/shop-region-picker.svelte";
+  import ShopItemDialog from "$lib/components/shop-item-dialog.svelte";
   import { regions } from "$lib/regionPicker";
   import { page } from "$app/state";
+  import type { ShopItem } from "$lib/server/shop";
 
   const { shopItems } = page.data;
   // biome-ignore lint/style/useConst: svelte moment
@@ -33,6 +35,14 @@
           : a.priceGlobal - b.priceGlobal
       );
   });
+
+  let shopItemDialogOpen = $state(false);
+  let shopItemDialogItem = $state<ShopItem | null>(null);
+
+  function openShopItemDialog(item: ShopItem) {
+    shopItemDialogItem = item;
+    shopItemDialogOpen = true;
+  }
 </script>
 
 <svelte:head>
@@ -46,18 +56,34 @@
     <div><ShopRegionPicker bind:region /></div>
   </div>
 
-  <div class="grid grid-cols-3 gap-4">
+  <div class="grid lg:grid-cols-3 gap-4">
     {#each availableShopItems as item}
-      <div class="bg-surface0 shadow p-4 rounded-lg">
-        <h2 class="text-xl font-bold">{item.name}</h2>
-        <p class="text-sm text-muted-foreground">{@html item.subtitle}</p>
-        {#if item.imageUrl}
-          <img src={item.imageUrl} alt="Image for {item.name}" />
-        {/if}
-        <p class="text-lg font-bold">
-          {region.value === "us" ? item.priceUs : item.priceGlobal}
-        </p>
-      </div>
+      <button class="h-full" onclick={() => openShopItemDialog(item)}>
+        <div class="bg-surface0 shadow p-4 rounded-lg h-full">
+          <div class="mb-4">
+            <h2 class="text-xl font-bold">{item.name}</h2>
+            <p class="text-sm text-muted-foreground mb-2">
+              {@html item.subtitle}
+            </p>
+            <p class="text-lg font-medium">
+              {region.value === "us" ? item.priceUs : item.priceGlobal} doubloons
+            </p>
+          </div>
+          {#if item.imageUrl}
+            <img
+              src={item.imageUrl}
+              alt="Image for {item.name}"
+              class="rounded-lg"
+            />
+          {/if}
+        </div>
+      </button>
     {/each}
   </div>
 </div>
+{#if shopItemDialogItem}
+  <ShopItemDialog
+    bind:open={shopItemDialogOpen}
+    bind:item={shopItemDialogItem}
+  />
+{/if}
