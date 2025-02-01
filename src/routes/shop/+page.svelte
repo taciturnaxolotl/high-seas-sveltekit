@@ -1,6 +1,7 @@
 <script lang="ts">
   import ShopRegionPicker from "$lib/components/shop-region-picker.svelte";
   import ShopItemDialog from "$lib/components/shop-item-dialog.svelte";
+  import ShowOutOfStock from "$lib/components/show-out-of-stock.svelte";
   import Button from "$lib/components/button.svelte";
   import { regions } from "$lib/regionPicker";
   import { page } from "$app/state";
@@ -31,6 +32,7 @@
   const availableShopItems = $derived.by(() => {
     return shopItems
       .filter((item) => item[regionKey])
+      .filter((item) => showOutOfStock || !item.outOfStock)
       .map((item) => {
         const price = region.value === "us" ? item.priceUs : item.priceGlobal;
         return {
@@ -49,6 +51,9 @@
     shopItemDialogItem = item;
     shopItemDialogOpen = true;
   }
+
+  // biome-ignore lint/style/useConst: svelte moment
+  let showOutOfStock = $state(false);
 </script>
 
 <svelte:head>
@@ -59,7 +64,8 @@
   <div class="mb-6 text-center flex justify-center flex-col">
     <h1 class="text-4xl text-center font-black mb-1">Shop</h1>
     <p class="mb-4">Choose a region to view the items available!</p>
-    <div><ShopRegionPicker bind:region /></div>
+    <div class="mb-2"><ShopRegionPicker bind:region /></div>
+    <div><ShowOutOfStock bind:checked={showOutOfStock} /></div>
   </div>
 
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -82,15 +88,26 @@
               />
             {/if}
           </div>
-          <a href="/api/buy?itemId={item.id}" target="_blank" class="w-full">
+          <a
+            href="/api/buy?itemId={item.id}"
+            target="_blank"
+            onclick={(event) => {
+              if (!item.canAfford || item.outOfStock) {
+                event.preventDefault();
+              }
+            }}
+            class="w-full"
+          >
             <Button
               variant="surface1"
               class="w-full hover:bg-mauve hover:text-black duration-250 mt-4"
-              disabled={!item.canAfford}
+              disabled={!item.canAfford || item.outOfStock}
               onclick={(event) => event.stopPropagation()}
-              >{item.canAfford
-                ? "Buy"
-                : `${item.price - (person?.doubloonsBalance || 0)} more doubloons needed`}</Button
+              >{item.outOfStock
+                ? "Out of stock!"
+                : item.canAfford
+                  ? "Buy"
+                  : `${item.price - (person?.doubloonsBalance || 0)} more doubloons needed`}</Button
             >
           </a>
         </div>
