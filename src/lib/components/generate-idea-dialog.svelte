@@ -6,15 +6,12 @@
   import X from "lucide-svelte/icons/x";
   import OpenAI from "openai";
   import { onMount } from "svelte";
-  import { PUBLIC_OPENAI_API_KEY } from "$env/static/public";
 
   let openai: OpenAI | undefined = $state();
   onMount(() => {
-    // FIXME: get rid of cors proxy
     openai = new OpenAI({
-      //  baseURL: "https://ai.hackclub.com",
-      apiKey: PUBLIC_OPENAI_API_KEY,
-      // FIXME: DO NOT SHIP THIS, AI.HACKCLUB.COM IS DOWN
+      baseURL: "https://ai.hackclub.com",
+      apiKey: "placeholder",
       dangerouslyAllowBrowser: true, // ai.hackclub.com is public ;)
     });
   });
@@ -29,28 +26,33 @@
     aiResponse = "";
     generating = true;
 
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 1.3,
-      messages: [
-        {
-          role: "user",
-          content: `Generate a 30-40 word software project idea that is fun and engaging.
+    try {
+      const stream = await openai.chat.completions.create({
+        model: "deepseek-chat",
+        temperature: 1.3,
+        messages: [
+          {
+            role: "user",
+            content: `Generate a 30-40 word software project idea that is fun and engaging.
              Ideally, It should be a 10-30 hour project. It could be a game, tool,
              website, bot, you name it - as long as it's fun and engaging! Please don't
              make Tic Tac Toe, calculator, or any other simple projects like that. No yapping,
              include the idea only. Only generate a single 30-40 word idea. No sub-ideas or
              explanations. Don't create a storytelling project or anything like that.
              ${Math.random()}`,
-        },
-      ],
-      stream: true,
-    });
-    for await (const chunk of stream) {
-      aiResponse += chunk.choices[0]?.delta?.content || "";
+          },
+        ],
+        stream: true,
+      });
+      for await (const chunk of stream) {
+        aiResponse += chunk.choices[0]?.delta?.content || "";
+      }
+    } catch {
+      aiResponse =
+        "Oops, https://ai.hackclub.com/DeepSeek might be down right now! Check back later.";
+    } finally {
+      generating = false;
     }
-
-    generating = false;
   }
 </script>
 
