@@ -8,7 +8,7 @@ export interface ShopItem {
   enabledUs: boolean | null;
   enabledEu: boolean | null;
   enabledIn: boolean | null;
-  enabledXx: boolean | null;
+  enabledXx: boolean | null; 
   enabledCa: boolean | null;
   enabledAll: boolean | null;
   enabledAu: boolean | null;

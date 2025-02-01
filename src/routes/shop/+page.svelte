@@ -6,6 +6,9 @@
   import { regions } from "$lib/regionPicker";
   import { page } from "$app/state";
   import type { ShopItem } from "$lib/server/shop";
+  import flexsearch from "flexsearch";
+
+  const Document = flexsearch.Document;
 
   const { shopItems, person } = page.data;
   // biome-ignore lint/style/useConst: svelte moment
@@ -29,8 +32,32 @@
     }
   });
 
+  const index = new Document({
+    tokenize: "forward",
+    cache: 100,
+    document: {
+      id: "id",
+      store: Object.keys(shopItems[0]),
+      index: ["name", "subtitle", "description"],
+    },
+  });
+
+  shopItems.forEach((item, count) => {
+    index.add({
+      ...item,
+      id: count,
+    });
+  });
+
   const availableShopItems = $derived.by(() => {
-    return shopItems
+    return (
+      query.trim() !== ""
+        ? new Set(index.search(query.trim()).flatMap((result) => result.result))
+            .values()
+            .map((index) => shopItems[index as number])
+            .toArray()
+        : shopItems
+    )
       .filter((item) => item[regionKey])
       .filter((item) => showOutOfStock || !item.outOfStock)
       .map((item) => {
@@ -54,6 +81,9 @@
 
   // biome-ignore lint/style/useConst: svelte moment
   let showOutOfStock = $state(false);
+
+  // biome-ignore lint/style/useConst: svelte moment
+  let query = $state("");
 </script>
 
 <svelte:head>
@@ -64,8 +94,16 @@
   <div class="mb-6 text-center flex justify-center flex-col">
     <h1 class="text-4xl text-center font-black mb-1">Shop</h1>
     <p class="mb-4">Choose a region to view the items available!</p>
-    <div class="mb-2"><ShopRegionPicker bind:region /></div>
-    <div><ShowOutOfStock bind:checked={showOutOfStock} /></div>
+    <div class="mb-3.5"><ShopRegionPicker bind:region /></div>
+    <div class="flex flex-col items-center gap-3">
+      <input
+        type="text"
+        bind:value={query}
+        class="inline-flex bg-base py-3 px-4 w-[296px] items-center rounded-md px-[11px] text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-surface0 focus:ring-offset-2 focus:ring-offset-overlay0"
+        placeholder="Search items..."
+      />
+      <ShowOutOfStock bind:checked={showOutOfStock} />
+    </div>
   </div>
 
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

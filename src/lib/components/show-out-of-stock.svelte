@@ -10,7 +10,7 @@
   <Checkbox.Root
     id="terms"
     aria-labelledby="terms-label"
-    class="peer inline-flex size-[25px] items-center justify-center rounded-md border border-surface0 bg-mauve transition-all duration-150 ease-in-out active:scale-98 data-[state=unchecked]:border-border-input data-[state=unchecked]:bg-base data-[state=unchecked]:hover:border-surface1"
+    class="peer inline-flex size-[25px] items-center justify-center rounded-md border border-surface0 bg-mauve transition-all duration-150 ease-in-out active:scale-98 data-[state=unchecked]:bg-base data-[state=unchecked]:hover:border-surface1"
     bind:checked
   >
     <Checkbox.Indicator
