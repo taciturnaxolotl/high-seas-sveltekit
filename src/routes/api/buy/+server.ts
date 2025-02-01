@@ -18,6 +18,13 @@ export async function GET({ url, locals }) {
     return error(418, { message: "Item not found" });
   }
 
+  if (
+    item.priceUs > locals.person.doubloonsBalance &&
+    item.priceGlobal > locals.person.doubloonsBalance
+  ) {
+    return error(402, { message: "Not enough doubloons" });
+  }
+
   const otp = Math.random().toString(16).slice(2);
   const otpExpiry = new Date(
     new Date().getTime() + 60 * 60 * 1000
