@@ -62,7 +62,7 @@
     <div><ShopRegionPicker bind:region /></div>
   </div>
 
-  <div class="grid lg:grid-cols-3 gap-4">
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each availableShopItems as item}
       <button class="h-full" onclick={() => openShopItemDialog(item)}>
         <div class="bg-surface0 shadow p-4 rounded-lg h-full flex flex-col">
