@@ -6,12 +6,15 @@
   import X from "lucide-svelte/icons/x";
   import OpenAI from "openai";
   import { onMount } from "svelte";
+  import { PUBLIC_OPENAI_API_KEY } from "$env/static/public";
 
   let openai: OpenAI | undefined = $state();
   onMount(() => {
+    // FIXME: get rid of cors proxy
     openai = new OpenAI({
-      baseURL: "https://ai.hackclub.com",
-      apiKey: "placeholder", // ai.hackclub.com doesn't need an API Key, but the SDK requires one anyway
+      //  baseURL: "https://ai.hackclub.com",
+      apiKey: PUBLIC_OPENAI_API_KEY,
+      // FIXME: DO NOT SHIP THIS, AI.HACKCLUB.COM IS DOWN
       dangerouslyAllowBrowser: true, // ai.hackclub.com is public ;)
     });
   });
@@ -22,17 +25,20 @@
 
   async function generateIdea() {
     if (!openai) return;
+    aiResponse = "";
     const stream = await openai.chat.completions.create({
-      model: "deepseek-chat",
+      model: "gpt-4o-mini",
+      temperature: 1.3,
       messages: [
         {
           role: "user",
-          content: `Generate a 40-50 word software project idea that is fun and engaging.
+          content: `Generate a 30-40 word software project idea that is fun and engaging.
              Ideally, It should be a 10-30 hour project. It could be a game, tool,
              website, bot, you name it - as long as it's fun and engaging! Please don't
              make Tic Tac Toe, calculator, or any other simple projects like that. No yapping,
-             include the idea only. Only generate a single 40-50 word idea. No sub-ideas or
-             explanations.`,
+             include the idea only. Only generate a single 30-40 word idea. No sub-ideas or
+             explanations. Don't create a storytelling project or anything like that.
+             ${Math.random()}`,
         },
       ],
       stream: true,
@@ -65,7 +71,7 @@
       </Dialog.Description>
 
       <!-- Dialog content -->
-      <div class="flex flex-col items-start gap-4 pb-11 pt-4">
+      <div class="flex flex-col items-start gap-4 pb-2 pt-4">
         <Button
           variant="primary"
           onclick={() => generateIdea()}
