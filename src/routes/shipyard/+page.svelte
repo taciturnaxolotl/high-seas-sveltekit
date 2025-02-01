@@ -45,8 +45,12 @@
   <ul class="space-y-3">
     {#each ships! as ship}
       <li class="w-full">
-        <button
+        <div
+          role="button"
+          tabindex="0"
           onclick={() => openViewShipDialog(ship)}
+          onkeydown={(event) =>
+            event.key === "Enter" && openViewShipDialog(ship)}
           class="rounded-lg {ship.isInYswsBase
             ? 'border-yellow-200 border-2 text-yellow-200'
             : ''} w-full bg-surface0 hover:bg-surface1 shadow-sm flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 transition-colors duration-200"
@@ -84,7 +88,7 @@
           <div class="mt-4 sm:mt-0 sm:ml-auto">
             <Button variant="secondary">Ship an update!</Button>
           </div>
-        </button>
+        </div>
       </li>
     {/each}
   </ul>
