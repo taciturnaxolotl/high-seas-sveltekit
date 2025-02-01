@@ -32,14 +32,12 @@
   <title>Shipyard - High Seas v2</title>
 </svelte:head>
 
-<div class="m-6 space-y-3">
-  <div class="mb-6">
-    <h1 class="text-4xl text-center font-black mb-4">Shipyard</h1>
-    <div class="flex justify-center gap-2">
-      <Button variant="primary" onclick={openShipDialog}>Draft a ship</Button>
-      <Button variant="surface0" onclick={openGenerateIdeaDialog}
-        >Generate an idea</Button
-      >
+<div class="p-4 md:p-6 space-y-4">
+  <div class="mb-4 md:mb-6">
+    <h1 class="text-3xl md:text-4xl text-center font-black mb-4">Shipyard</h1>
+    <div class="flex flex-col sm:flex-row justify-center gap-2 px-2">
+      <Button variant="primary" class="w-full sm:w-auto" onclick={openShipDialog}>Draft a ship</Button>
+      <Button variant="surface0" class="w-full sm:w-auto" onclick={openGenerateIdeaDialog}>Generate an idea</Button>
     </div>
   </div>
   <ul class="space-y-3">
@@ -53,49 +51,49 @@
             event.key === "Enter" && openViewShipDialog(ship)}
           class="rounded-lg {ship.isInYswsBase
             ? 'border-yellow-200 border-2 text-yellow-200'
-            : ''} w-full bg-surface0 hover:bg-surface1 shadow-sm flex flex-col sm:gap-2 sm:flex-row items-start sm:items-center p-4 transition-colors duration-200"
+            : ''} w-full bg-surface0 hover:bg-surface1 shadow-sm flex flex-col sm:flex-row sm:items-center p-4 transition-colors duration-200"
         >
-          <div class="flex gap-4 items-center">
-            <div class="w-16 h-16 relative mb-4 sm:mb-0 sm:mr-4 flex-shrink-0">
+          <div class="flex gap-3 sm:gap-4 items-start sm:items-center flex-grow">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 relative flex-shrink-0">
               <img
                 src={ship.ships[ship.ships.length - 1].screenshotUrl}
                 alt={`Screenshot of ${ship.title}`}
                 class="object-cover w-full h-full absolute top-0 left-0 rounded"
               />
             </div>
-          </div>
-          <div class="flex-grow">
-            <h2
-              class="text-xl {ship.isInYswsBase
-                ? 'font-bold'
-                : 'font-semibold'} text-left mb-2 sm:block hidden"
-            >
-              {ship.title}
-            </h2>
-            
-            <div class="flex flex-wrap items-start gap-2 text-sm">
-              {#if ship.ships.at(-1)?.shipStatus === "shipped"}
-                {#if ship.totalDoubloons != null}
-                  <Pill>{ship.totalDoubloons} doubloons</Pill>
+            <div class="flex-grow min-w-0">
+              <h2
+                class="text-lg sm:text-xl {ship.isInYswsBase
+                  ? 'font-bold'
+                  : 'font-semibold'} text-left mb-2 truncate"
+              >
+                {ship.title}
+              </h2>
+
+              <div class="flex flex-wrap items-start gap-2 text-sm">
+                {#if ship.ships.at(-1)?.shipStatus === "shipped"}
+                  {#if ship.totalDoubloons != null}
+                    <Pill>{ship.totalDoubloons} doubloons</Pill>
+                  {/if}
+                  {#if ship.totalHours != null}
+                    <Pill>{Math.round(ship.totalHours * 10) / 10} hours</Pill>
+                    <Pill>
+                      {Math.round((ship.totalDoubloons / ship.totalHours) * 10) /
+                        10} doubloons/hr</Pill
+                    >
+                  {/if}
+                {:else}
+                  <Pill
+                    >Draft {ship.ships.at(-1)?.shipType === "project"
+                      ? "ship"
+                      : "update"}
+                  </Pill>
                 {/if}
-                {#if ship.totalHours != null}
-                  <Pill>{Math.round(ship.totalHours * 10) / 10} hours</Pill>
-                  <Pill>
-                    {Math.round((ship.totalDoubloons / ship.totalHours) * 10) /
-                      10} doubloons/hr</Pill
-                  >
-                {/if}
-              {:else}
-                <Pill
-                  >Draft ${ship.ships.at(-1)?.shipType === "project"
-                    ? "ship"
-                    : "update"}
-                </Pill>
-              {/if}
+              </div>
             </div>
           </div>
-          <div class="mt-4 sm:mt-0 sm:ml-auto">
-            <Button variant="secondary">Ship an update!</Button>
+          <div class="mt-4 sm:mt-0 sm:ml-4">
+            <Button variant="secondary" class="w-full sm:w-auto">Ship an update!</Button>
           </div>
         </div>
       </li>
