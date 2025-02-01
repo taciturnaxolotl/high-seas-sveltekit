@@ -82,7 +82,7 @@
               />
             {/if}
           </div>
-          <a href="/api/buy?itemId={item.id}" class="w-full">
+          <a href="/api/buy?itemId={item.id}" target="_blank" class="w-full">
             <Button
               variant="surface1"
               class="w-full hover:bg-mauve hover:text-black duration-250 mt-4"
