@@ -17,7 +17,7 @@
     />
     <Dialog.Content
       transition={flyAndScale}
-      class="fixed left-[50%] top-[50%] z-50 w-full max-w-[94%] translate-x-[-50%] translate-y-[-50%] rounded-lg border border-surface0 bg-base p-5 shadow-sm outline-none sm:max-w-[490px] md:w-full"
+      class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-[94%] sm:max-w-[490px] md:w-full max-h-[90vh] rounded-lg border border-surface0 bg-base p-5 shadow-sm outline-none overflow-hidden flex flex-col"
     >
       <Dialog.Title
         class="flex w-full items-center justify-center text-lg font-semibold tracking-tight"
@@ -30,7 +30,7 @@
       </Dialog.Description>
 
       <!-- Dialog content -->
-      <div class="flex flex-col items-start gap-4 pb-11 pt-4">
+      <div class="flex flex-col gap-4 py-4 overflow-y-auto scrollbar">
         <div class="w-full space-y-1">
           <Label.Root for="shipName" class="text-sm font-medium"
             >Ship name</Label.Root
