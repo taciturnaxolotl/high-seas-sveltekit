@@ -1,38 +1,39 @@
-# sv
+# High Seas v2
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A faster, easier to use client for High Seas.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+### Shipyard
 
-```bash
-# create a new project in the current directory
-npx sv create
+The shipyard has better styling for YSWS ships, and the doubloons/hr you got on the ship!
 
-# create a new project in my-app
-npx sv create my-app
-```
+![image](https://cloud-2nxzhrvu8-hack-club-bot.vercel.app/0image.png)
 
-## Developing
+Markdown rendering of the READMEs is also faster, looks better, and is more accurate.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+![image](https://cloud-hpnn89zng-hack-club-bot.vercel.app/0image.png)
 
-```bash
-npm run dev
+The "Generate an idea" button is less buggy, faster (see a pattern here?) and provides objectively better ideas.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+![image](https://cloud-5715bhvcm-hack-club-bot.vercel.app/0image.png)
 
-## Building
+### Shop
 
-To create a production version of your app:
+The shop is a lot faster and shows more items at a time. It also shows you how many more doubloons you need for items you can't afford.
 
-```bash
-npm run build
-```
+![image](https://cloud-qefbd3ljn-hack-club-bot.vercel.app/0image.png)
 
-You can preview the production build with `npm run preview`.
+There's also a shop dialog that you can open by clicking on an item.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+![image](https://cloud-kkvmgeodv-hack-club-bot.vercel.app/0image.png)
+
+Plus, there's a purchase API (`/api/buy?itemId={id}`) that you can use to buy items.
+
+### Miscellaneous
+
+#### Better error page
+
+Rather than a cryptic Vercel error, the error page provides some useful information and has better styling.
+
+![image](https://cloud-btjsaye91-hack-club-bot.vercel.app/0image.png)
