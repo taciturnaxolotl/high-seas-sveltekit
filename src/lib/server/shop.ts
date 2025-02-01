@@ -24,6 +24,7 @@ export interface ShopItem {
   fulfillment_description: string | null;
   links: string[] | null[];
   limited_qty: boolean | null;
+  filloutBaseUrl: string;
 }
 
 export async function getShop(): Promise<ShopItem[]> {
@@ -78,6 +79,7 @@ export async function getShop(): Promise<ShopItem[]> {
                 record.get("third_party_link_ca") as string,
               ],
               limited_qty: Boolean(record.get("limited_qty")) as boolean,
+              filloutBaseUrl: record.get("fillout_base_url") as string,
             });
           }
 
@@ -86,4 +88,9 @@ export async function getShop(): Promise<ShopItem[]> {
         (err) => (err ? reject(err) : resolve(items))
       );
   });
+}
+
+export async function getShopItem(id: string): Promise<ShopItem | null> {
+  const items = await getShop();
+  return items.find((item) => item.id === id) || null;
 }

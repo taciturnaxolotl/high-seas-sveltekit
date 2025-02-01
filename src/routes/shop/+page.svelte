@@ -49,12 +49,6 @@
     shopItemDialogItem = item;
     shopItemDialogOpen = true;
   }
-
-  function handleBuy(event: Event, item: ShopItem) {
-    event.stopPropagation();
-    // TODO: Implement buy functionality
-    console.log("Buy clicked for:", item.name);
-  }
 </script>
 
 <svelte:head>
@@ -88,15 +82,17 @@
               />
             {/if}
           </div>
-          <Button
-            variant="surface1"
-            class="w-full hover:bg-mauve hover:text-black duration-250 mt-4"
-            disabled={!item.canAfford}
-            onclick={(e) => handleBuy(e, item)}
-            >{item.canAfford
-              ? "Buy"
-              : `${item.price - (person?.doubloonsBalance || 0)} more doubloons needed`}</Button
-          >
+          <a href="/api/buy?itemId={item.id}" class="w-full">
+            <Button
+              variant="surface1"
+              class="w-full hover:bg-mauve hover:text-black duration-250 mt-4"
+              disabled={!item.canAfford}
+              onclick={(event) => event.stopPropagation()}
+              >{item.canAfford
+                ? "Buy"
+                : `${item.price - (person?.doubloonsBalance || 0)} more doubloons needed`}</Button
+            >
+          </a>
         </div>
       </button>
     {/each}

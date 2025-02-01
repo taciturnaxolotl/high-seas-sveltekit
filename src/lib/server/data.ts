@@ -170,6 +170,7 @@ export interface EditableShipFields {
 }
 export interface Person {
   fullName: string;
+  recordId: string;
   email: string;
   autonumber: number;
   voteBalance: number;

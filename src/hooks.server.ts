@@ -59,6 +59,7 @@ const personMiddleware: Handle = async ({ event, resolve }) => {
       .ships_awaiting_vote_requirement as number,
     totalHoursLogged: person.fields.total_hours_logged as number,
     doubloonsBalance: person.fields.doubloons_balance as number,
+    recordId: person.id,
   };
 
   console.warn("Banlist is not being checked!");
