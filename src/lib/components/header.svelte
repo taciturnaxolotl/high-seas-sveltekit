@@ -3,7 +3,7 @@
   import Button from "./button.svelte";
   import { page } from "$app/state";
   import { Menu, X } from "lucide-svelte";
-  import { fade, slide } from "svelte/transition";
+  import { slide } from "svelte/transition";
 
   const { slackSession, person } = page.data;
   let isMenuOpen = false;
