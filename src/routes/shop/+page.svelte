@@ -32,6 +32,7 @@
     }
   });
 
+  console.time("index-gen");
   const index = new Document({
     tokenize: "forward",
     cache: 100,
@@ -48,7 +49,12 @@
       id: count,
     });
   });
+  console.timeEnd("index-gen");
 
+  // biome-ignore lint/style/useConst: svelte moment
+  let query = $state("");
+  // biome-ignore lint/style/useConst: svelte moment
+  let showOutOfStock = $state(false);
   const availableShopItems = $derived.by(() => {
     return (
       query.trim() !== ""
@@ -78,12 +84,6 @@
     shopItemDialogItem = item;
     shopItemDialogOpen = true;
   }
-
-  // biome-ignore lint/style/useConst: svelte moment
-  let showOutOfStock = $state(false);
-
-  // biome-ignore lint/style/useConst: svelte moment
-  let query = $state("");
 </script>
 
 <svelte:head>
@@ -108,7 +108,13 @@
 
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each availableShopItems as item}
-      <button class="h-full" onclick={() => openShopItemDialog(item)}>
+      <div
+        role="button"
+        tabindex="0"
+        class="h-full text-center"
+        onclick={() => openShopItemDialog(item)}
+        onkeydown={(event) => event.key === "Enter" && openShopItemDialog(item)}
+      >
         <div class="bg-surface0 shadow p-4 rounded-lg h-full flex flex-col">
           <div class="flex-grow">
             <h2 class="text-xl font-bold">{item.name}</h2>
@@ -149,7 +155,7 @@
             >
           </a>
         </div>
-      </button>
+      </div>
     {/each}
   </div>
 </div>
