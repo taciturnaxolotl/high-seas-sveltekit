@@ -38,7 +38,7 @@
     cache: 100,
     document: {
       id: "id",
-      store: Object.keys(shopItems[0]),
+      store: [],
       index: ["name", "subtitle", "description"],
     },
   });
