@@ -6,11 +6,11 @@
 <a href="#ships" class="text-mauve underline font-semibold">Jump to Ships</a>
 <a href="#person" class="text-mauve underline font-semibold">Jump to Person</a>
 
-<h2 class="text-4xl font-black my-2" id="ships">Ships</h2>
+<h2 class="text-4xl font-black my-2" id="ships">Ships ({ships?.length})</h2>
 {#if ships}
-  {#each ships as ship}
-    <pre>{JSON.stringify(ship, null, 2)}</pre>
-  {/each}
+  <pre>
+    {JSON.stringify(ships, null, 2)}
+  </pre>
 {:else}
   No ships
 {/if}
