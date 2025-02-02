@@ -1,10 +1,3 @@
-# Sorry, High Seas v2 isn't available right now
-A pull request removing skyfall.dino.icu has been merged in hackclub/dns. Unfortunately, that means you can't use High Seas v2 for now.
-
-We are fortunate that Max Wofford has indicated that he will work with us on a solution to reinstate High Seas v2 once we get a different Airtable API key. Please stay tuned!
-
----
-
 # High Seas v2
 
 A faster, easier to use client for High Seas.
