@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-  <title>Shipyard - High Seas v2</title>
+  <title>Debug - High Seas v2</title>
 </svelte:head>
 
 <a href="#ships" class="text-mauve underline font-semibold">Jump to Ships</a>
