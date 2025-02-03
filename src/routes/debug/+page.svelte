@@ -8,8 +8,7 @@
 
 <h2 class="text-4xl font-black my-2" id="ships">Ships ({ships?.length})</h2>
 {#if ships}
-  <pre>{JSON.stringify(ships, null, 2)}
-  </pre>
+  <pre>{JSON.stringify(ships, null, 2)}</pre>
 {:else}
   No ships
 {/if}
