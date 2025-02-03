@@ -8,6 +8,7 @@ declare global {
       ships?: import("./lib/server/data").ShipGroup[];
       shopItems: import("./lib/server/shop").ShopItem[];
       person?: import("./lib/server/data").Person;
+      startTime: number;
     }
     interface PageData {
       slackSession?: import("./lib/server/db/schema").SlackSession;

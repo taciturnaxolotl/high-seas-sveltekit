@@ -7,7 +7,6 @@ export async function fetchShips(
   maxRecords?: number
 ): Promise<ShipGroup[]> {
   const filterFormula = `AND(
-        TRUE(),
         '${slackId}' = {entrant__slack_id},
         {project_source} = 'high_seas',
         {ship_status} != 'deleted'

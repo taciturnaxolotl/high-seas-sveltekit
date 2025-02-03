@@ -49,9 +49,7 @@ const personMiddleware: Handle = async ({ event, resolve }) => {
 
     const person = people[0];
     personCache.set(slackSession.userId, person);
-    console.log(
-      `personMiddleware (cached) took ${performance.now() - start}ms`
-    );
+    console.log("personMiddleware - person not cached");
     return person;
   })();
   if (!person) {
@@ -78,25 +76,28 @@ const personMiddleware: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-const loadShipsMiddleware: Handle = async ({ event, resolve }) => {
-  const start = performance.now();
-  if (!event.locals.slackSession) return resolve(event);
+const loadDataMiddleware: Handle = async ({ event, resolve }) => {
+  await Promise.all([
+    (async () => {
+      const start = performance.now();
+      if (!event.locals.slackSession) return;
 
-  const ships = await fetchShips(event.locals.slackSession.userId);
-  event.locals.ships = ships;
+      const shopItems = await getShop();
+      event.locals.shopItems = shopItems;
 
-  console.log(`loadShipsMiddleware took ${performance.now() - start}ms`);
-  return resolve(event);
-};
+      console.log(`loadShop took ${performance.now() - start}ms`);
+    })(),
+    (async () => {
+      const start = performance.now();
+      if (!event.locals.slackSession) return;
 
-const loadShopMiddleware: Handle = async ({ event, resolve }) => {
-  const start = performance.now();
-  if (!event.locals.slackSession) return resolve(event);
+      const ships = await fetchShips(event.locals.slackSession.userId);
+      event.locals.ships = ships;
 
-  const shopItems = await getShop();
-  event.locals.shopItems = shopItems;
+      console.log(`loadShips took ${performance.now() - start}ms`);
+    })(),
+  ]);
 
-  console.log(`loadShopMiddleware took ${performance.now() - start}ms`);
   return resolve(event);
 };
 
@@ -110,10 +111,23 @@ const redirectMiddleware: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
+const instrumentStartMiddleware: Handle = async ({ event, resolve }) => {
+  console.log("Starting instrumentation");
+  event.locals.startTime = performance.now();
+  return resolve(event);
+};
+
+const instrumentEndMiddleware: Handle = async ({ event, resolve }) => {
+  const endTime = performance.now();
+  console.log(`Request took ${endTime - event.locals.startTime}ms`);
+  return resolve(event);
+};
+
 export const handle = sequence(
+  instrumentStartMiddleware,
   slackMiddleware,
   redirectMiddleware,
   personMiddleware,
-  loadShipsMiddleware,
-  loadShopMiddleware
+  loadDataMiddleware,
+  instrumentEndMiddleware
 );
