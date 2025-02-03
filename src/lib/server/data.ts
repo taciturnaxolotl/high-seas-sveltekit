@@ -1,5 +1,5 @@
 import airtable from "./airtable";
-// import { writeFile } from "node:fs/promises"; // debugging
+import TTLCache from "@isaacs/ttlcache";
 
 const createShipGroup = (ship: Ship): ShipGroup => ({
   title: ship.title,
@@ -18,72 +18,74 @@ const updateShipGroup = (group: ShipGroup, ship: Ship): void => {
   group.ships.push(ship);
 };
 
-// #region fships
+// Cache ships per slack user with 5-minute TTL
+const shipsCache = new TTLCache<string, ShipGroup[]>({
+  max: 1000,
+  ttl: 300_000,
+});
+
 export async function fetchShips(
   slackId: string,
   maxRecords?: number
 ): Promise<ShipGroup[]> {
-  const filterFormula = `AND(
-        '${slackId}' = {entrant__slack_id},
-        {project_source} = 'high_seas',
-        {ship_status} != 'deleted'
-    )`;
-  const query: { filterByFormula?: string; maxRecords?: number } = {
-    filterByFormula: filterFormula,
-  };
-  if (maxRecords) query.maxRecords = maxRecords;
-  const unmappedShips = await airtable("ships").select(query).all();
+  const cacheKey = `${slackId}-${maxRecords ?? "all"}`;
+  const cached = shipsCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
 
-  // await writeFile("ships.json", JSON.stringify(unmappedShips, null, 2)); // TODO: remove (debug)
+  const filterFormula = `AND(
+    '${slackId}' = {entrant__slack_id},
+    {project_source} = 'high_seas',
+    {ship_status} != 'deleted'
+  )`;
+
+  const unmappedShips = await airtable("ships")
+    .select({
+      filterByFormula: filterFormula,
+      ...(maxRecords && { maxRecords }),
+    })
+    .all();
 
   const shipGroups: ShipGroup[] = [];
   const shipGroupMap = new Map<string, ShipGroup>();
-  for (const r of unmappedShips) {
-    const reshippedToIdRaw = r.fields.reshipped_to as [string] | null;
-    const reshippedToId = reshippedToIdRaw ? reshippedToIdRaw[0] : null;
 
-    const reshippedFromIdRaw = r.fields.reshipped_from as [string] | null;
-    const reshippedFromId = reshippedFromIdRaw ? reshippedFromIdRaw[0] : null;
-    const reshippedAll = r.fields.reshipped_all as [string] | null;
-    const reshippedFromAll = r.fields.reshipped_from_all as [string] | null;
-
-    const wakatimeProjectNameRaw = r.fields.wakatime_project_name as
-      | string
-      | null;
-    const wakatimeProjectNames = wakatimeProjectNameRaw
-      ? wakatimeProjectNameRaw.split("$$xXseparatorXx$$")
-      : [];
+  // Process ships in a single pass
+  for (const record of unmappedShips) {
+    const fields = record.fields as Record<string, unknown>;
 
     const ship: Ship = {
-      id: r.id,
-      autonumber: r.fields.autonumber as number,
-      title: r.fields.title as string,
-      repoUrl: r.fields.repo_url as string,
-      deploymentUrl: r.fields.deploy_url as string,
-      readmeUrl: r.fields.readme_url as string,
-      screenshotUrl: r.fields.screenshot_url as string,
-      voteRequirementMet: Boolean(r.fields.vote_requirement_met),
+      id: record.id,
+      autonumber: fields.autonumber as number,
+      title: fields.title as string,
+      repoUrl: fields.repo_url as string,
+      deploymentUrl: fields.deploy_url as string,
+      readmeUrl: fields.readme_url as string,
+      screenshotUrl: fields.screenshot_url as string,
+      voteRequirementMet: Boolean(fields.vote_requirement_met),
       voteBalanceExceedsRequirement: Boolean(
-        r.fields.vote_balance_exceeds_requirement
+        fields.vote_balance_exceeds_requirement
       ),
-      matchupsCount: r.fields.matchups_count as number,
-      doubloonPayout: r.fields.doubloon_payout as number,
-      shipType: r.fields.ship_type as ShipType,
-      shipStatus: r.fields.ship_status as ShipStatus,
-      wakatimeProjectNames,
-      hours: r.fields.hours as number,
-      creditedHours: r.fields.credited_hours as number,
-      totalHours: r.fields.total_hours as number,
-      createdTime: r.fields.created_time as string,
-      updateDescription: r.fields.update_description as string | null,
-      reshippedFromId,
-      reshippedToId,
-      reshippedAll,
-      reshippedFromAll,
-      paidOut: Boolean(r.fields.paid_out),
-      yswsType: r.fields.yswsType as YswsType,
-      feedback: r.fields.ai_feedback_summary as string | null,
-      isInYswsBase: Boolean(r.fields.has_ysws_submission_id),
+      matchupsCount: fields.matchups_count as number,
+      doubloonPayout: fields.doubloon_payout as number,
+      shipType: fields.ship_type as ShipType,
+      shipStatus: fields.ship_status as ShipStatus,
+      wakatimeProjectNames: ((fields.wakatime_project_name as string) ?? "")
+        .split("$$xXseparatorXx$$")
+        .filter(Boolean),
+      hours: fields.hours as number,
+      creditedHours: fields.credited_hours as number,
+      totalHours: fields.total_hours as number,
+      createdTime: fields.created_time as string,
+      updateDescription: fields.update_description as string | null,
+      reshippedFromId: (fields.reshipped_from as string[])?.[0] ?? null,
+      reshippedToId: (fields.reshipped_to as string[])?.[0] ?? null,
+      reshippedAll: fields.reshipped_all as string[] | null,
+      reshippedFromAll: fields.reshipped_from_all as string[] | null,
+      paidOut: Boolean(fields.paid_out),
+      yswsType: fields.yswsType as YswsType,
+      feedback: fields.ai_feedback_summary as string | null,
+      isInYswsBase: Boolean(fields.has_ysws_submission_id),
     };
 
     if (!ship.reshippedFromId) {
@@ -100,11 +102,15 @@ export async function fetchShips(
     }
   }
 
-  shipGroups.sort((a, b) => +b.created - +a.created);
+  const sortedGroups = shipGroups.sort(
+    (a, b) => +new Date(b.created) - +new Date(a.created)
+  );
 
-  return shipGroups;
+  // Update cache
+  shipsCache.set(cacheKey, sortedGroups);
+
+  return sortedGroups;
 }
-// #endregion fships
 
 // #region Types
 export type ShipType = "project" | "update";
