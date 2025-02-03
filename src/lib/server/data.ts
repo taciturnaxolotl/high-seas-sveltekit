@@ -1,6 +1,23 @@
 import airtable from "./airtable";
 // import { writeFile } from "node:fs/promises"; // debugging
 
+const createShipGroup = (ship: Ship): ShipGroup => ({
+  title: ship.title,
+  created: new Date(ship.createdTime),
+  totalDoubloons: ship.doubloonPayout || 0,
+  totalHours: ship.creditedHours || 0,
+  isInYswsBase: ship.isInYswsBase,
+  ships: [ship],
+});
+
+const updateShipGroup = (group: ShipGroup, ship: Ship): void => {
+  group.totalHours += ship.creditedHours || 0;
+  group.totalDoubloons += ship.doubloonPayout;
+  group.title = ship.title;
+  group.isInYswsBase = ship.isInYswsBase;
+  group.ships.push(ship);
+};
+
 // #region fships
 export async function fetchShips(
   slackId: string,
@@ -19,7 +36,9 @@ export async function fetchShips(
 
   // await writeFile("ships.json", JSON.stringify(unmappedShips, null, 2)); // TODO: remove (debug)
 
-  const mappedShips = unmappedShips.map((r) => {
+  const shipGroups: ShipGroup[] = [];
+  const shipGroupMap = new Map<string, ShipGroup>();
+  for (const r of unmappedShips) {
     const reshippedToIdRaw = r.fields.reshipped_to as [string] | null;
     const reshippedToId = reshippedToIdRaw ? reshippedToIdRaw[0] : null;
 
@@ -67,30 +86,6 @@ export async function fetchShips(
       isInYswsBase: Boolean(r.fields.has_ysws_submission_id),
     };
 
-    return ship;
-  });
-
-  const createShipGroup = (ship: Ship): ShipGroup => ({
-    title: ship.title,
-    created: new Date(ship.createdTime),
-    totalDoubloons: ship.doubloonPayout || 0,
-    totalHours: ship.creditedHours || 0,
-    isInYswsBase: ship.isInYswsBase,
-    ships: [ship],
-  });
-
-  const updateShipGroup = (group: ShipGroup, ship: Ship): void => {
-    group.totalHours += ship.creditedHours || 0;
-    group.totalDoubloons += ship.doubloonPayout;
-    group.title = ship.title;
-    group.isInYswsBase = ship.isInYswsBase;
-    group.ships.push(ship);
-  };
-
-  const shipGroups: ShipGroup[] = [];
-  const shipGroupMap = new Map<string, ShipGroup>();
-
-  for (const ship of mappedShips) {
     if (!ship.reshippedFromId) {
       const group = createShipGroup(ship);
       shipGroups.push(group);
