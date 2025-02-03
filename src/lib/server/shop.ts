@@ -8,7 +8,7 @@ export interface ShopItem {
   enabledUs: boolean | null;
   enabledEu: boolean | null;
   enabledIn: boolean | null;
-  enabledXx: boolean | null; 
+  enabledXx: boolean | null;
   enabledCa: boolean | null;
   enabledAll: boolean | null;
   enabledAu: boolean | null;
@@ -27,10 +27,17 @@ export interface ShopItem {
   filloutBaseUrl: string;
 }
 
+let shopCache: ShopItem[] | null = null;
+let shopCacheExpiry: number | null = null;
 export async function getShop(): Promise<ShopItem[]> {
   const items: ShopItem[] = [];
 
   return new Promise((resolve, reject) => {
+    if (shopCache !== null && shopCacheExpiry && shopCacheExpiry > Date.now()) {
+      console.log("Returning cached shop");
+      return resolve(shopCache);
+    }
+
     airtable("shop_items")
       .select({
         filterByFormula: `AND(
@@ -85,7 +92,13 @@ export async function getShop(): Promise<ShopItem[]> {
 
           fetchNextPage();
         },
-        (err) => (err ? reject(err) : resolve(items))
+        (err) => {
+          if (err) reject(err);
+          shopCache = items;
+          shopCacheExpiry = Date.now() + 5 * 60 * 1000;
+          console.log("Updated shop cache");
+          resolve(items);
+        }
       );
   });
 }
