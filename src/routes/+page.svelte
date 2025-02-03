@@ -1,12 +1,13 @@
 <script>
   import Button from "$lib/components/button.svelte";
+  import highSeasLogo from "$lib/assets/highseas.png";
 </script>
 
 <main>
   <div class="flex flex-col items-center justify-center mx-auto px-4 py-16">
     <div class="max-w-4xl mx-auto text-center">
       <img
-        src="/highseas.png"
+        src={highSeasLogo}
         alt="High Seas"
         class="sm:w-[50%] mb-4 inline-flex justify-center h-auto"
       />
