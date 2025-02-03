@@ -3,6 +3,10 @@
   const { ships, person } = page.data;
 </script>
 
+<svelte:head>
+  <title>Shipyard - High Seas v2</title>
+</svelte:head>
+
 <a href="#ships" class="text-mauve underline font-semibold">Jump to Ships</a>
 <a href="#person" class="text-mauve underline font-semibold">Jump to Person</a>
 
