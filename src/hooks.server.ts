@@ -24,7 +24,7 @@ const slackMiddleware: Handle = async ({ event, resolve }) => {
 };
 
 const personCache = new TTLCache({
-  ttl: 1000 * 60 * 2,
+  ttl: 1000 * 60 * 4,
 });
 const personMiddleware: Handle = async ({ event, resolve }) => {
   const slackSession = event.locals.slackSession;
