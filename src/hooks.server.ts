@@ -9,6 +9,7 @@ import type { FieldSet, Record as AirtableRecord } from "airtable";
 import { redirect, type Handle } from "@sveltejs/kit";
 
 const slackMiddleware: Handle = async ({ event, resolve }) => {
+  const start = performance.now();
   const sessionId = event.cookies.get("session");
   if (!sessionId) return resolve(event);
   const slackSessions = await db
@@ -16,10 +17,16 @@ const slackMiddleware: Handle = async ({ event, resolve }) => {
     .from(slackSessionsTable)
     .where(eq(slackSessionsTable.sessionId, sessionId))
     .execute();
-  if (slackSessions.length === 0) return resolve(event);
+  if (slackSessions.length === 0) {
+    console.log(
+      `slackMiddleware (early exit) took ${performance.now() - start}ms`
+    );
+    return resolve(event);
+  }
   const slackSession = slackSessions[0];
   event.locals.slackSession = slackSession;
 
+  console.log(`slackMiddleware took ${performance.now() - start}ms`);
   return resolve(event);
 };
 
@@ -27,6 +34,7 @@ const personCache = new TTLCache({
   ttl: 1000 * 60 * 4,
 });
 const personMiddleware: Handle = async ({ event, resolve }) => {
+  const start = performance.now();
   const slackSession = event.locals.slackSession;
   if (!slackSession) return resolve(event);
 
@@ -41,6 +49,9 @@ const personMiddleware: Handle = async ({ event, resolve }) => {
 
     const person = people[0];
     personCache.set(slackSession.userId, person);
+    console.log(
+      `personMiddleware (cached) took ${performance.now() - start}ms`
+    );
     return person;
   })();
   if (!person) {
@@ -63,24 +74,29 @@ const personMiddleware: Handle = async ({ event, resolve }) => {
   };
 
   console.warn("Banlist is not being checked!");
+  console.log(`personMiddleware took ${performance.now() - start}ms`);
   return resolve(event);
 };
 
 const loadShipsMiddleware: Handle = async ({ event, resolve }) => {
+  const start = performance.now();
   if (!event.locals.slackSession) return resolve(event);
 
   const ships = await fetchShips(event.locals.slackSession.userId);
   event.locals.ships = ships;
 
+  console.log(`loadShipsMiddleware took ${performance.now() - start}ms`);
   return resolve(event);
 };
 
 const loadShopMiddleware: Handle = async ({ event, resolve }) => {
+  const start = performance.now();
   if (!event.locals.slackSession) return resolve(event);
 
   const shopItems = await getShop();
   event.locals.shopItems = shopItems;
 
+  console.log(`loadShopMiddleware took ${performance.now() - start}ms`);
   return resolve(event);
 };
 
