@@ -16,6 +16,8 @@ export async function GET({ url, cookies }) {
     const exchangeSearchParams = exchangeUrl.searchParams;
     exchangeSearchParams.append('client_id', PUBLIC_SLACK_CLIENT_ID);
     exchangeSearchParams.append('client_secret', SLACK_CLIENT_SECRET);
+    exchangeSearchParams.append('redirect_uri', url.origin + url.pathname)
+    console.log(url.origin + url.pathname)
     exchangeSearchParams.append('code', code);
 
     const oidcResponse = await fetch(exchangeUrl, { method: 'POST' })
